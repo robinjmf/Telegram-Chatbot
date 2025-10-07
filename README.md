@@ -12,7 +12,7 @@ A minimal Telegram planner bot that remembers a basic user profile and generates
 - Windows 10/11
 - Python 3.10+ (`python --version`)
 - A Telegram Bot Token (create via @BotFather)
-- An OpenAI API key (or compatible provider key)
+- EITHER an OpenAI/compatible API key OR a local model (free) via Ollama
 
 ## Quick Start (5–10 minutes)
 
@@ -38,15 +38,37 @@ Then activate again.
 pip install -r requirements.txt
 ```
 
-### 4) Configure environment
-Create a `.env` file in the project root with:
+### 4) Choose your model setup
 
+- Paid cloud (OpenAI/compatible):
+  - Create `.env` (see below) with your real API key and base URL.
+
+- Free local model with Ollama (recommended for zero cost):
+  1. Install Ollama from `https://ollama.com`
+  2. Open a terminal and pull a model, e.g.: `ollama pull llama3.1:8b-instruct`
+  3. Keep Ollama running (it runs a local server on `http://localhost:11434`)
+  4. Use the `.env` settings shown below for Ollama
+
+### 5) Configure environment
+Create a `.env` file in the project root with ONE of these setups.
+
+- Example (Ollama local, free):
 ```
 TELEGRAM_BOT_TOKEN=123456:ABC...         # from @BotFather
-OPENAI_API_KEY=sk-...                    # or provider-specific key
+OPENAI_API_KEY=ollama                    # any non-empty string works
+OPENAI_BASE_URL=http://localhost:11434/v1
+OPENAI_MODEL=llama3.1:8b-instruct
+PLANNING_DAYS=7
+MEMORY_PATH=./data/memory.json
+```
+
+- Example (OpenAI cloud):
+```
+TELEGRAM_BOT_TOKEN=123456:ABC...
+OPENAI_API_KEY=sk-...
 OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4o-mini                 # adjust if you like
-PLANNING_DAYS=7                          # how many days to plan
+OPENAI_MODEL=gpt-4o-mini
+PLANNING_DAYS=7
 MEMORY_PATH=./data/memory.json
 ```
 
@@ -54,7 +76,7 @@ Notes:
 - `OPENAI_BASE_URL` can point to other compatible endpoints if you prefer
 - `PLANNING_DAYS` sets planning horizon
 
-### 5) Run the bot
+### 6) Run the bot
 ```powershell
 python bot.py
 ```
@@ -79,9 +101,14 @@ In Telegram, find your bot and send `/start`.
 ## Updating the model/provider
 Change `OPENAI_MODEL` or `OPENAI_BASE_URL` in `.env`. If using an OpenAI-compatible provider, keep the schema of the Chat Completions API or update `planner.py` accordingly.
 
+## Free local model notes (Ollama)
+- First request for a model may take longer as it loads the weights.
+- You can try other models, e.g. `llama3.1:8b-instruct-q4_K_M` for less RAM.
+- Keep Ollama running while the bot is running.
+
 ## Troubleshooting
 - If the bot won’t start: verify tokens in `.env` are correct and the virtual environment is active
-- If messages lag: check your internet and provider status; reduce `PLANNING_DAYS`
+- If messages lag: check your internet/provider or try a smaller local model
 - If file permission issues on Windows: run PowerShell as Administrator
 
 ## Next steps
